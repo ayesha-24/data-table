@@ -39,45 +39,52 @@ export default function DataTable() {
   }, [currentPage, pageSize, data]);
 
   return (
-    <>
-      <table>
-        <thead>
-          <tr>
-            {columnHeaders.map((header) => (
-              <th key={header}>{header.toUpperCase()}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              <td>{row.name}</td>
-              <td>{row.dob}</td>
-              <td>{row.email}</td>
-              <td>{row.verified ? "Yes" : "No"}</td>
-              <td>{row.salary}</td>
+    <div className="page-container">
+      <div className="data-table-container">
+        <table>
+          <thead>
+            <tr>
+              {columnHeaders.map((header) => (
+                <th key={header}>{header.toUpperCase()}</th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <div style={{ marginTop: "10px" }}>
-        <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-          Previous
-        </button>
-        <span style={{ margin: "0 10px" }}>
-          Page {currentPage} of {totalPages}
-        </span>
-        <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-          Next
-        </button>
-        <select onChange={(e) => setPageSize(Number(e.target.value))} value={pageSize}>
-          {pageSizeOptions.map((number) => (
-            <option key={number} value={number}>
-              {number}
-            </option>
-          ))}
-        </select>
+          </thead>
+          <tbody>
+            {paginatedData.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                <td>{row.name}</td>
+                <td>{row.dob}</td>
+                <td>{row.email}</td>
+                <td style={{ color: row.verified ? "green" : "red" }}>{row.verified ? "Yes" : "No"}</td>
+                <td>£{row.salary}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="table-controls">
+          <div className="page-number-container">
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <span> Show on page: </span>
+            <select onChange={(e) => setPageSize(Number(e.target.value))} value={pageSize}>
+              {pageSizeOptions.map((number) => (
+                <option key={number} value={number}>
+                  {number}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="page-selection-container">
+            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+              Previous
+            </button>
+            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+              Next
+            </button>
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
