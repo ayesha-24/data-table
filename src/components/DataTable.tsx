@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import peopleData from "../../random-people-data.json";
+import DataCard from "./DataCard";
 
 interface Data {
   _id: string;
@@ -30,6 +31,7 @@ export default function DataTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [paginatedData, setPaginatedData] = useState<Data[]>([]);
+  const [selectedRecord, setSelectedRecord] = useState<Data | null>(null);
 
   const totalPages = Math.ceil(data.length / pageSize);
 
@@ -45,18 +47,26 @@ export default function DataTable() {
           <thead>
             <tr>
               {columnHeaders.map((header) => (
-                <th key={header}>{header.toUpperCase()}</th>
+                <th key={header} style={{ position: "sticky", top: 0 }}>
+                  {header.toUpperCase()}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {paginatedData.map((row, rowIndex) => (
-              <tr key={rowIndex}>
+              <tr key={rowIndex} onClick={() => setSelectedRecord(row)} style={{ cursor: "pointer" }}>
                 <td>{row.name}</td>
-                <td>{row.dob}</td>
+                <td>
+                  {new Date(row.dob).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </td>
                 <td>{row.email}</td>
-                <td style={{ color: row.verified ? "green" : "red" }}>{row.verified ? "Yes" : "No"}</td>
-                <td>£{row.salary}</td>
+                <td style={{ color: row.verified ? "green" : "red" }}>{row.verified ? "Yes ✅" : "No ❌"}</td>
+                <td>£{row.salary.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
@@ -66,7 +76,7 @@ export default function DataTable() {
             <span>
               Page {currentPage} of {totalPages}
             </span>
-            <span> Show on page: </span>
+            <span style={{ marginLeft: "10px" }}> Show on page: </span>
             <select onChange={(e) => setPageSize(Number(e.target.value))} value={pageSize}>
               {pageSizeOptions.map((number) => (
                 <option key={number} value={number}>
@@ -76,7 +86,7 @@ export default function DataTable() {
             </select>
           </div>
           <div className="page-selection-container">
-            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+            <button style={{ marginRight: "10px" }} onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
               Previous
             </button>
             <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
@@ -85,6 +95,7 @@ export default function DataTable() {
           </div>
         </div>
       </div>
+      {selectedRecord && <DataCard record={selectedRecord} onClose={() => setSelectedRecord(null)} />}
     </div>
   );
 }
